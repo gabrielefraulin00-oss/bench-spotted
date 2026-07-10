@@ -14,6 +14,7 @@ app.mount("/static", StaticFiles(directory="static"), name="static")
 
 templates = Jinja2Templates(directory="templates")
 
+ 
 
 @app.get("/", response_class=HTMLResponse)
 def home(request: Request):
@@ -44,6 +45,9 @@ def save_spot(
     longitude: float = Form(...),
     image: UploadFile = File(None)
 ):
+
+    print("====== ADD SPOT STARTED ======")
+    print(name, image.filename if image else "NO IMAGE")
 
     db = SessionLocal()
 
@@ -93,6 +97,8 @@ def save_spot(
     db.add(new_spot)
 
     db.commit()
+
+    print("====== DATABASE SAVED ======")
 
     db.close()
 
