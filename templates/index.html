@@ -13,6 +13,9 @@
           href="https://unpkg.com/leaflet/dist/leaflet.css"/>
 
     <style>
+        .leaflet-popup-content {
+    font-size:16px;
+}
 
         html, body {
             margin: 0;
@@ -76,6 +79,13 @@
 
 </head>
 
+<meta name="theme-color" content="#2f855a">
+
+<link rel="apple-touch-icon" href="/static/icons/icon-192.png">
+
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+
 
 <body>
 
@@ -100,7 +110,55 @@
 <script>
 
 
-const map = L.map('map').setView(
+cconst map = L.map('map').setView(
+    [46.06, 13.23],
+    13
+);
+
+
+let userMarker;
+
+
+if (navigator.geolocation) {
+
+    navigator.geolocation.getCurrentPosition(
+
+        function(position){
+
+            const lat = position.coords.latitude;
+            const lng = position.coords.longitude;
+
+
+            map.setView(
+                [lat, lng],
+                15
+            );
+
+
+            userMarker = L.marker(
+                [lat, lng]
+            )
+            .addTo(map)
+            .bindPopup(
+                "📍 You are here"
+            )
+            .openPopup();
+
+
+        },
+
+        function(error){
+
+            console.log(
+                "GPS error:",
+                error
+            );
+
+        }
+
+    );
+
+}onst map = L.map('map').setView(
     [46.06,13.23],
     13
 );
