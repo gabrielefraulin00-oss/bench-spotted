@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+<title>Add Spot - Bench Spotted</title>
+
+<link rel="stylesheet"
+href="https://unpkg.com/leaflet/dist/leaflet.css"/>
+
+<style>
+
+body{
+
+    font-family:Arial,sans-serif;
+    margin:20px;
+
+}
+
+#map{
+
+    height:350px;
+    width:100%;
+    border-radius:15px;
+    margin-bottom:20px;
+
+}
+
+input,
+textarea,
+select{
+
+    width:100%;
+    padding:10px;
+    margin-top:5px;
+    margin-bottom:15px;
+
+    border-radius:10px;
+    border:1px solid #ccc;
+
+    box-sizing:border-box;
+
+}
+
+button{
+
+    padding:12px 20px;
+
+    border:none;
+
+    border-radius:10px;
+
+    cursor:pointer;
+
+    margin-right:10px;
+
+}
+
+#save{
+
+    background:#2f855a;
+    color:white;
+
+}
+
+#gps{
+
+    background:#eeeeee;
+
+}
+
+</style>
+
+</head>
+
+<body>
+
+<h2>🌿 Add a New Spot</h2>
+
+<p>Select the exact place on the map or use your GPS.</p>
+
+<div id="map"></div>
+
+<form action="/add" method="post" enctype="multipart/form-data">
+
+<label>Name</label>
+
+<input
+name="name"
+required>
+
+<label>Description</label>
+
+<textarea
+name="description"
+required></textarea>
+
+<label>Category</label>
+
+<select name="category">
+
+<option value="bench">🪑 Bench</option>
+<option value="panorama">🌅 Panorama</option>
+<option value="nature">🌳 Nature</option>
+<option value="quiet">🤫 Quiet Place</option>
+
+</select>
+
+<label>Calmness (1-10)</label>
+
+<input
+type="number"
+name="calmness"
+min="1"
+max="10"
+required>
+
+<label>Photo</label>
+
+<input
+type="file"
+name="image"
+accept="image/*">
+
+<input
+id="latitude"
+name="latitude"
+type="hidden"
+value="{{ latitude if latitude else '' }}">
+
+<input
+id="longitude"
+name="longitude"
+type="hidden"
+value="{{ longitude if longitude else '' }}">
+
+<button
+id="gps"
+type="button"
+onclick="getLocation()">
+
+📍 Use my GPS
+
+</button>
+
+<button
+id="save"
+type="submit">
+
+💾 Save Spot
+
+</button>
+
+</form>
+
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+
+<script>
+
+let lat = {{ latitude if latitude else 46.06 }};
+let lng = {{ longitude if longitude else 13.23 }};
+
+let map = L.map('map').setView([lat,lng],15);
+
+L.tileLayer(
+'https://tile.openstreetmap.org/{z}/{x}/{y}.png'
+).addTo(map);
+
+let marker = L.marker([lat,lng]).addTo(map);
+
+document.getElementById("latitude").value = lat;
+document.getElementById("longitude").value = lng;
+
+map.on("click",function(e){
+
+    lat = e.latlng.lat;
+    lng = e.latlng.lng;
+
+    marker.setLatLng([lat,lng]);
+
+    document.getElementById("latitude").value = lat;
+    document.getElementById("longitude").value = lng;
+
+});
+
+function getLocation(){
+
+    navigator.geolocation.getCurrentPosition(
+
+        function(position){
+
+            lat = position.coords.latitude;
+            lng = position.coords.longitude;
+
+            marker.setLatLng([lat,lng]);
+
+            map.setView([lat,lng],17);
+
+            document.getElementById("latitude").value = lat;
+            document.getElementById("longitude").value = lng;
+
+        },
+
+        function(){
+
+            alert("Could not get your location.");
+
+        }
+
+    );
+
+}
+
+</script>
+
+</body>
+
+</html>
