@@ -157,100 +157,65 @@ attribution:'© OpenStreetMap'
 
 
 
-// ======================
 // GPS LOCATION
-// ======================
+
+setTimeout(function(){
+
+    if (navigator.geolocation) {
 
 
-if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+
+            function(position){
 
 
-navigator.geolocation.getCurrentPosition(
+                const lat = position.coords.latitude;
+                const lng = position.coords.longitude;
 
 
-function(position){
+                map.setView(
+                    [lat,lng],
+                    16
+                );
 
 
-const lat =
-position.coords.latitude;
+                L.marker(
+                    [lat,lng]
+                )
+                .addTo(map)
+                .bindPopup(
+                    "📍 You are here"
+                )
+                .openPopup();
 
 
-const lng =
-position.coords.longitude;
+            },
 
 
+            function(error){
 
-map.setView(
+                console.log(
+                    "GPS ERROR:",
+                    error.message
+                );
 
-[lat,lng],
+            },
 
-16
+            {
 
-);
+                enableHighAccuracy:true,
+                timeout:10000
 
-
-
-L.marker(
-
-[lat,lng]
-
-)
-
-.addTo(map)
-
-.bindPopup(
-"📍 You are here"
-)
-
-.openPopup();
+            }
 
 
-
-},
-
+        );
 
 
-function(error){
+    }
 
 
-console.log(
-
-"GPS ERROR:",
-
-error.message
-
-);
-
-
-},
-
-
-{
-
-enableHighAccuracy:true,
-
-timeout:10000
-
-}
-
-
-
-);
-
-
-}
-
-else {
-
-
-console.log(
-"GPS not supported"
-);
-
-
-}
-
-
+},1000);
 
 
 
