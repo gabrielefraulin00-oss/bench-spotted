@@ -6,6 +6,7 @@ from fastapi.staticfiles import StaticFiles
 from database import SessionLocal, Spot
 import shutil
 import os
+import uuid
 
 app = FastAPI()
 
@@ -52,14 +53,19 @@ def save_spot(
 
     image_path = None
 
-    if image:
+    # Only try to save if a real file was actually selected
+    if image and image.filename:
 
         os.makedirs(
             "static/uploads",
             exist_ok=True
         )
 
-        image_path = "static/uploads/" + image.filename
+        # Prefix with a uuid so two uploads with the same filename
+        # (e.g. "photo.jpg") never overwrite each other
+        unique_name = f"{uuid.uuid4().hex}_{image.filename}"
+
+        image_path = "static/uploads/" + unique_name
 
         with open(image_path, "wb") as buffer:
 
