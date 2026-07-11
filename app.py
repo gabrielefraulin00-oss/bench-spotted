@@ -1,6 +1,5 @@
 from fastapi.templating import Jinja2Templates
-from fastapi import Request, Form, UploadFile, File
-from fastapi import FastAPI
+from fastapi import Request, Form, UploadFile, File, FastAPI
 from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 
@@ -14,7 +13,6 @@ app.mount("/static", StaticFiles(directory="static"), name="static")
 
 templates = Jinja2Templates(directory="templates")
 
- 
 
 @app.get("/", response_class=HTMLResponse)
 def home(request: Request):
@@ -28,6 +26,7 @@ def home(request: Request):
 
 @app.get("/add", response_class=HTMLResponse)
 def add_page(request: Request):
+
     return templates.TemplateResponse(
         request=request,
         name="add_spot.html",
@@ -53,7 +52,6 @@ def save_spot(
 
     image_path = None
 
-
     if image:
 
         os.makedirs(
@@ -61,11 +59,7 @@ def save_spot(
             exist_ok=True
         )
 
-        image_path = (
-            "static/uploads/"
-            + image.filename
-        )
-
+        image_path = "static/uploads/" + image.filename
 
         with open(image_path, "wb") as buffer:
 
@@ -74,40 +68,35 @@ def save_spot(
                 buffer
             )
 
-
     new_spot = Spot(
 
         name=name,
-
         description=description,
-
         category=category,
-
         calmness=calmness,
-
         latitude=latitude,
-
         longitude=longitude,
-
         image=image_path
 
     )
 
+    db.add(new_spot)
 
-db.add(new_spot)
+    try:
 
-try:
-    db.commit()
-    print("DATABASE OK")
+        db.commit()
+        print("DATABASE OK")
 
-except Exception as e:
-    print("DATABASE ERROR:", e)
-    db.rollback()
+    except Exception as e:
 
-finally:
-    db.close()
+        print("DATABASE ERROR:", e)
+        db.rollback()
 
-return RedirectResponse("/", status_code=303)
+    finally:
+
+        db.close()
+
+    return RedirectResponse("/", status_code=303)
 
 
 @app.get("/api/spots")
@@ -120,16 +109,20 @@ def api_spots():
     result = []
 
     for spot in spots:
+
         result.append({
-    "id": spot.id,
-    "name": spot.name,
-    "description": spot.description,
-    "latitude": spot.latitude,
-    "longitude": spot.longitude,
-    "category": spot.category,
-    "calmness": spot.calmness,
-    "image": spot.image
-    })
+
+            "id": spot.id,
+            "name": spot.name,
+            "description": spot.description,
+            "latitude": spot.latitude,
+            "longitude": spot.longitude,
+            "category": spot.category,
+            "calmness": spot.calmness,
+            "image": spot.image
+
+        })
+
     db.close()
 
     return result
