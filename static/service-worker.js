@@ -1,4 +1,5 @@
-const CACHE_NAME = "bench-spotted-v1";
+
+const CACHE_NAME = "bench-spotted-v2";
 
 const FILES_TO_CACHE = [
     "/",
@@ -20,7 +21,31 @@ self.addEventListener("install", event => {
 });
 
 
+self.addEventListener("activate", event => {
+
+    event.waitUntil(
+
+        caches.keys().then(keyList => {
+            return Promise.all(
+                keyList.map(key => {
+                    if (key !== CACHE_NAME) {
+                        return caches.delete(key);
+                    }
+                })
+            );
+        })
+
+    );
+
+});
+
+
 self.addEventListener("fetch", event => {
+
+    // Only intercept GET requests — POST/PUT/DELETE etc. go straight to network
+    if (event.request.method !== "GET") {
+        return;
+    }
 
     event.respondWith(
 
