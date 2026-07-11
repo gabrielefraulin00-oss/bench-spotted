@@ -132,9 +132,13 @@ html, body {
 // ======================
 
 
-const map = L.map('map').setView(
-    [46.06,13.23],
-    13
+const map = L.map('map');
+
+
+// Temporary neutral view while GPS loads
+map.setView(
+    [0, 0],
+    2
 );
 
 
@@ -167,27 +171,45 @@ if (navigator.geolocation) {
 
     navigator.geolocation.getCurrentPosition(
 
+
         function(position){
 
 
-            const lat = position.coords.latitude;
-            const lng = position.coords.longitude;
+            const lat =
+                position.coords.latitude;
+
+
+            const lng =
+                position.coords.longitude;
+
 
 
             map.setView(
-                [lat,lng],
+
+                [lat, lng],
+
                 16
+
             );
 
 
+
             L.marker(
-                [lat,lng]
+
+                [lat, lng]
+
             )
+
             .addTo(map)
+
             .bindPopup(
+
                 "📍 You are here"
+
             )
+
             .openPopup();
+
 
 
         },
@@ -197,8 +219,22 @@ if (navigator.geolocation) {
 
 
             console.log(
+
                 "GPS ERROR:",
+
                 error.message
+
+            );
+
+
+            // If GPS fails, keep neutral world view
+
+            map.setView(
+
+                [0, 0],
+
+                2
+
             );
 
 
@@ -208,7 +244,10 @@ if (navigator.geolocation) {
         {
 
             enableHighAccuracy:true,
-            timeout:10000
+
+            timeout:15000,
+
+            maximumAge:60000
 
         }
 
@@ -222,7 +261,18 @@ else {
 
 
     console.log(
+
         "GPS not supported"
+
+    );
+
+
+    map.setView(
+
+        [0,0],
+
+        2
+
     );
 
 
