@@ -96,13 +96,23 @@ def save_spot(
 
     db.add(new_spot)
 
+    try:
+
     db.commit()
 
-    print("====== DATABASE SAVED ======")
+    print("DATABASE OK")
+
+
+except Exception as e:
+
+    print("DATABASE ERROR:", e)
+
+    db.rollback()
+
+
+finally:
 
     db.close()
-
-
     return RedirectResponse("/", status_code=303)
 
 
