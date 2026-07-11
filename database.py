@@ -1,18 +1,22 @@
 from sqlalchemy import create_engine, Column, Integer, String, Float, ForeignKey, DateTime
 from sqlalchemy.orm import declarative_base, sessionmaker, relationship
 from datetime import datetime
+import os
 
 
-DATABASE_URL = "sqlite:///spots.db"
+DATABASE_URL = os.environ.get(
+    "DATABASE_URL",
+    "postgresql://postgres:YOUR_PASSWORD@db.sqxlvbmjmjfjlyfhhozt.supabase.co:5432/postgres"
+)
 
 
 engine = create_engine(
-    DATABASE_URL,
-    connect_args={"check_same_thread": False}
+    DATABASE_URL
 )
 
 
 Base = declarative_base()
+
 
 
 class Spot(Base):
@@ -36,7 +40,6 @@ class Spot(Base):
     image = Column(String, nullable=True)
 
 
-    # Ratings connected to this spot
     ratings = relationship(
         "Rating",
         back_populates="spot",
@@ -44,7 +47,6 @@ class Spot(Base):
     )
 
 
-    # Comments connected to this spot
     comments = relationship(
         "Comment",
         back_populates="spot",
@@ -103,4 +105,6 @@ class Comment(Base):
 Base.metadata.create_all(bind=engine)
 
 
-SessionLocal = sessionmaker(bind=engine)
+SessionLocal = sessionmaker(
+    bind=engine
+)
