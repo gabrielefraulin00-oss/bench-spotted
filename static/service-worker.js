@@ -1,5 +1,5 @@
 
-const CACHE_NAME = "bench-spotted-v2";
+const CACHE_NAME = "bench-spotted-v3";
 
 const FILES_TO_CACHE = [
     "/",
@@ -7,14 +7,25 @@ const FILES_TO_CACHE = [
 ];
 
 
-self.addEventListener("install", event => {
+self.addEventListener("activate", event => {
 
     event.waitUntil(
 
-        caches.open(CACHE_NAME)
-        .then(cache => {
-            return cache.addAll(FILES_TO_CACHE);
+        caches.keys().then(keyList => {
+
+            return Promise.all(
+
+                keyList.map(key => {
+
+                    return caches.delete(key);
+
+                })
+
+            );
+
         })
+
+        .then(() => self.clients.claim())
 
     );
 
