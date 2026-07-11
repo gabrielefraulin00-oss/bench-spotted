@@ -11,7 +11,10 @@ DATABASE_URL = os.environ.get(
 
 
 engine = create_engine(
-    DATABASE_URL
+    DATABASE_URL,
+    connect_args={
+        "sslmode": "require"
+    }
 )
 
 
