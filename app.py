@@ -94,26 +94,20 @@ def save_spot(
     )
 
 
-    db.add(new_spot)
+db.add(new_spot)
 
-    try:
-
+try:
     db.commit()
-
     print("DATABASE OK")
 
-
 except Exception as e:
-
     print("DATABASE ERROR:", e)
-
     db.rollback()
 
-
 finally:
-
     db.close()
-    return RedirectResponse("/", status_code=303)
+
+return RedirectResponse("/", status_code=303)
 
 
 @app.get("/api/spots")
