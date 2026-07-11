@@ -40,8 +40,8 @@ def save_spot(
     description: str = Form(...),
     category: str = Form(...),
     calmness: int = Form(...),
-    latitude: float = Form(...),
-    longitude: float = Form(...),
+    latitude: float = Form(46.06),
+    longitude: float = Form(13.23),
     image: UploadFile = File(None)
 ):
 
