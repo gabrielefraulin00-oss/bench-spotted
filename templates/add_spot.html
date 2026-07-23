@@ -180,6 +180,8 @@ function updatePosition(latitude, longitude){
     document.getElementById("latitude").value = lat;
     document.getElementById("longitude").value = lng;
     console.log("SAVING POSITION:", lat, lng);
+    document.getElementById("position").innerHTML =
+"Latitude: " + lat + "<br>Longitude: " + lng;
 
     if(marker){
 
@@ -235,12 +237,23 @@ function getLocation(){
 
 }
 
-map.on("click",function(e){
+map.on("click", function(e){
 
-    updatePosition(
-        e.latlng.lat,
-        e.latlng.lng
-    );
+    lat = e.latlng.lat;
+    lng = e.latlng.lng;
+
+    if(marker){
+
+        marker.setLatLng([lat,lng]);
+
+    } else {
+
+        marker = L.marker([lat,lng]).addTo(map);
+
+    }
+
+    document.getElementById("latitude").value = lat;
+    document.getElementById("longitude").value = lng;
 
 });
 
