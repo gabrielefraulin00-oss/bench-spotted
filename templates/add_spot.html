@@ -81,6 +81,9 @@ button{
 <p>Select the exact place on the map or use your GPS.</p>
 
 <div id="map"></div>
+<p id="coords">
+Waiting for location...
+</p>
 
 <form action="/add" method="post" enctype="multipart/form-data">
 
@@ -194,6 +197,10 @@ function updatePosition(latitude, longitude){
     }
 
     map.setView([lat,lng],17);
+     document.getElementById("coords").innerHTML =
+"Selected:<br>" +
+lat + "<br>" +
+lng;
 
 }
 
