@@ -5,6 +5,8 @@
 
 <title>Add Spot - Bench Spotted</title>
 
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <link rel="stylesheet"
 href="https://unpkg.com/leaflet/dist/leaflet.css"/>
 
@@ -121,17 +123,16 @@ required>
 type="file"
 name="image"
 accept="image/*">
+
 <input
 id="latitude"
 name="latitude"
-type="hidden"
-value="46.06">
+type="hidden">
 
 <input
 id="longitude"
 name="longitude"
-type="hidden"
-value="13.23">
+type="hidden">
 
 <button
 id="gps"
@@ -156,59 +157,95 @@ type="submit">
 
 <script>
 
-let lat = {{ latitude if latitude else 46.06 }};
-let lng = {{ longitude if longitude else 13.23 }};
+// Start with a neutral world view
+let lat = 0;
+let lng = 0;
 
-let map = L.map('map').setView([lat,lng],15);
+const map = L.map("map").setView([20,0],2);
 
 L.tileLayer(
-'https://tile.openstreetmap.org/{z}/{x}/{y}.png'
+"https://tile.openstreetmap.org/{z}/{x}/{y}.png",
+{
+    maxZoom:19,
+    attribution:"© OpenStreetMap"
+}
 ).addTo(map);
 
-let marker = L.marker([lat,lng]).addTo(map);
+let marker = null;
 
-document.getElementById("latitude").value = lat;
-document.getElementById("longitude").value = lng;
+function updatePosition(latitude, longitude){
 
-map.on("click",function(e){
-
-    lat = e.latlng.lat;
-    lng = e.latlng.lng;
-
-    marker.setLatLng([lat,lng]);
+    lat = latitude;
+    lng = longitude;
 
     document.getElementById("latitude").value = lat;
     document.getElementById("longitude").value = lng;
 
-});
+    if(marker){
+
+        marker.setLatLng([lat,lng]);
+
+    }else{
+
+        marker = L.marker([lat,lng]).addTo(map);
+
+    }
+
+    map.setView([lat,lng],17);
+
+}
 
 function getLocation(){
+
+    if(!navigator.geolocation){
+
+        alert("Geolocation is not supported.");
+
+        return;
+
+    }
 
     navigator.geolocation.getCurrentPosition(
 
         function(position){
 
-            lat = position.coords.latitude;
-            lng = position.coords.longitude;
-
-            marker.setLatLng([lat,lng]);
-
-            map.setView([lat,lng],17);
-
-            document.getElementById("latitude").value = lat;
-            document.getElementById("longitude").value = lng;
+            updatePosition(
+                position.coords.latitude,
+                position.coords.longitude
+            );
 
         },
 
-        function(){
+        function(error){
 
-            alert("Could not get your location.");
+            alert("Unable to retrieve your GPS position.");
+
+            console.log(error);
+
+        },
+
+        {
+
+            enableHighAccuracy:true,
+            timeout:10000
 
         }
 
     );
 
 }
+
+map.on("click",function(e){
+
+    updatePosition(
+        e.latlng.lat,
+        e.latlng.lng
+    );
+
+});
+
+// Automatically ask for GPS when the page opens
+getLocation();
 
 </script>
 
